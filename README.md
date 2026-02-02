@@ -1,10 +1,10 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+<img width="1200" height="475" alt="PyFixer-Pro Banner" src="https://github.com/mttechindustries/mttechindustries.github.io/blob/main/MT-Tech-Industries.png?raw=true" />
 </div>
 
 # PyFixer-Pro - Advanced Python Code Analysis & Fixing Tool
 
-PyFixer-Pro is an advanced Python code analysis and fixing tool that leverages multiple AI providers to identify and fix code issues, improve code quality, and visualize dependencies. The enhanced version includes comprehensive metrics, advanced analysis, and intelligent suggestions.
+PyFixer-Pro is an advanced Python code analysis and fixing tool developed by MT Tech Industries LLC that leverages multiple AI providers to identify and fix code issues, improve code quality, and visualize dependencies. The enhanced version includes comprehensive metrics, advanced analysis, and intelligent suggestions.
 
 ## Features
 
@@ -20,6 +20,10 @@ PyFixer-Pro is an advanced Python code analysis and fixing tool that leverages m
 - **Advanced Analysis**: Specialized analysis for security, performance, duplication, and complexity
 - **Intelligent Code Suggestions**: AI-powered suggestions for code improvements with before/after comparisons
 - **Provider Performance Tracking**: Compare effectiveness of different AI providers for specific tasks
+
+## Developed by MT Tech Industries LLC
+
+This project is proudly developed and maintained by [MT Tech Industries LLC](https://mttechindustries.github.io/). Our commitment is to provide cutting-edge development tools that empower developers worldwide.
 
 ## Supported AI Providers
 
@@ -102,6 +106,12 @@ PyFixer-Pro uses an abstract AI provider interface that allows seamless switchin
 - **Confidence Scoring**: Each suggestion includes a confidence percentage
 - **Before/After Views**: See code transformations before and after applying suggestions
 - **One-Click Application**: Easily implement suggested improvements
+
+## About MT Tech Industries LLC
+
+MT Tech Industries LLC is committed to developing innovative technology solutions that advance the field of software development. Our products focus on enhancing developer productivity and code quality through intelligent automation and advanced AI technologies.
+
+Learn more about us at [https://mttechindustries.github.io/](https://mttechindustries.github.io/)
 
 ## Contributing
 

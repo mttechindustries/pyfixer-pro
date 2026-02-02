@@ -1,0 +1,7 @@
+{
+  "name": "PyFixer Pro",
+  "description": "A robust, high-performance static analysis and intelligent refactoring tool for Python 3 applications developed by MT Tech Industries LLC. Designed to diagnose structural issues, dependency tangles, and logical bugs with deterministic precision and optional heuristic depth.",
+  "author": "MT Tech Industries LLC",
+  "website": "https://mttechindustries.github.io/",
+  "requestFramePermissions": []
+}
