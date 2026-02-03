@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/genai";
 import OpenAI from 'openai';
 import { PythonFile, AnalysisIssue, AIProvider, AIProviderType, AIProviderConfig, AIService } from "./types";
 import { mockAIService, AIRequest } from "./mockAIService";
@@ -21,17 +21,23 @@ const geminiProvider: AIProvider = {
   name: 'Gemini',
   config: {
     apiKey: process.env.GEMINI_API_KEY || '',
-    model: 'gemini-3-pro-preview'
+    model: 'gemini-1.5-pro-latest'
   },
-  
+
   analyzeCode: async (code: string, context?: string) => {
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
-      
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-pro-preview',
-        contents: `Analyze this Python code for bugs, architectural issues, and PEP8 violations. Return a structured JSON report.\n\nFILE CONTENT:\n${code}${context ? `\n\nCONTEXT:\n${context}` : ''}`,
-        config: {
+      const ai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+
+      const model = ai.getGenerativeModel({ model: 'gemini-1.5-pro-latest' });
+
+      const prompt = `Analyze this Python code for bugs, architectural issues, and PEP8 violations. Return a structured JSON report.\n\nFILE CONTENT:\n${code}${context ? `\n\nCONTEXT:\n${context}` : ''}`;
+
+      const result = await model.generateContent({
+        contents: [{
+          role: 'user',
+          parts: [{ text: prompt }]
+        }],
+        generationConfig: {
           responseMimeType: "application/json",
           responseSchema: {
             type: "object",
@@ -57,7 +63,8 @@ const geminiProvider: AIProvider = {
         }
       });
 
-      return JSON.parse(response.text);
+      const response = await result.response;
+      return JSON.parse(response.text());
     } catch (error) {
       console.error("Gemini API error:", error);
       // Fallback to mock service
@@ -67,21 +74,21 @@ const geminiProvider: AIProvider = {
 
   fixCode: async (code: string, issue: AnalysisIssue) => {
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
-      
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-pro-preview',
-        contents: `You are a Python expert. Fix the following issue in this file.
+      const ai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+      const model = ai.getGenerativeModel({ model: 'gemini-1.5-pro-latest' });
+
+      const prompt = `You are a Python expert. Fix the following issue in this file.
     Issue: ${issue.message} at line ${issue.line}.
     Suggested Fix Direction: ${issue.suggestedFix || 'Apply best practices'}
 
     CODE:
     ${code}
 
-    Return ONLY the corrected full content of the file.`,
-      });
+    Return ONLY the corrected full content of the file.`;
 
-      return response.text.trim();
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      return response.text().trim();
     } catch (error) {
       console.error("Gemini API error:", error);
       // Fallback to mock service
@@ -91,19 +98,19 @@ const geminiProvider: AIProvider = {
 
   formatCode: async (code: string) => {
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
-      
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: `Reformat the following Python code to strictly adhere to PEP 8 standards, similar to what the 'black' formatter would do. Maintain all logic exactly as is.
+      const ai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+      const model = ai.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
+      const prompt = `Reformat the following Python code to strictly adhere to PEP 8 standards, similar to what the 'black' formatter would do. Maintain all logic exactly as is.
 
     CODE:
     ${code}
 
-    Return ONLY the formatted code content.`,
-      });
+    Return ONLY the formatted code content.`;
 
-      return response.text.trim().replace(/^```python\n/, '').replace(/\n```$/, '');
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      return response.text().trim().replace(/^```python\n/, '').replace(/\n```$/, '');
     } catch (error) {
       console.error("Gemini API error:", error);
       // Fallback to mock service
@@ -120,14 +127,14 @@ const openaiProvider: AIProvider = {
     apiKey: process.env.OPENAI_API_KEY || '',
     model: 'gpt-4o'
   },
-  
+
   analyzeCode: async (code: string, context?: string) => {
     try {
       const client = new OpenAI({
         apiKey: process.env.OPENAI_API_KEY || '',
         dangerouslyAllowBrowser: true
       });
-      
+
       const response = await client.chat.completions.create({
         model: 'gpt-4o',
         messages: [
@@ -157,7 +164,7 @@ const openaiProvider: AIProvider = {
         apiKey: process.env.OPENAI_API_KEY || '',
         dangerouslyAllowBrowser: true
       });
-      
+
       const response = await client.chat.completions.create({
         model: 'gpt-4o',
         messages: [
@@ -193,7 +200,7 @@ const openaiProvider: AIProvider = {
         apiKey: process.env.OPENAI_API_KEY || '',
         dangerouslyAllowBrowser: true
       });
-      
+
       const response = await client.chat.completions.create({
         model: 'gpt-4o',
         messages: [

@@ -167,6 +167,57 @@ const App: React.FC = () => {
     setShowSettings(false);
   };
 
+  // Import/Upload functionality
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target?.result as string;
+        const newId = Math.random().toString(36).substr(2, 9);
+        const newFile: PythonFile = {
+          id: newId,
+          name: file.name,
+          content: content,
+          path: file.name
+        };
+
+        setState(prev => ({
+          ...prev,
+          files: [...prev.files, newFile],
+          activeFileId: newId
+        }));
+      };
+      reader.readAsText(file);
+    });
+
+    // Reset the input
+    event.target.value = '';
+  };
+
+  // Export functionality
+  const handleExportProject = () => {
+    const projectData = {
+      files: state.files,
+      createdAt: new Date().toISOString(),
+      exportedBy: 'MT Tech Industries LLC',
+      version: '2026.1.0'
+    };
+
+    const dataStr = JSON.stringify(projectData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `pyfixer-pro-project-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="flex h-screen w-full bg-slate-950 text-slate-200 overflow-hidden font-sans">
       {/* Top Header */}
@@ -248,6 +299,24 @@ const App: React.FC = () => {
               </button>
           </div>
 
+          <div className="flex gap-2 ml-auto">
+            <button
+              onClick={() => document.getElementById('file-upload')?.click()}
+              className="flex items-center gap-1.5 px-3 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-semibold rounded transition-all border border-slate-700"
+            >
+              <span className="hidden sm:inline">UPLOAD</span>
+              <span className="sm:hidden">UP</span>
+            </button>
+
+            <button
+              onClick={handleExportProject}
+              className="flex items-center gap-1.5 px-3 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-semibold rounded transition-all border border-slate-700"
+            >
+              <span className="hidden sm:inline">EXPORT</span>
+              <span className="sm:hidden">EXP</span>
+            </button>
+          </div>
+
           <div className="flex items-center gap-3 text-slate-500">
             <div className="flex items-center gap-1">
               <Cpu size={12} className="text-blue-400" />
@@ -287,7 +356,7 @@ const App: React.FC = () => {
         onSave={handleSaveSettings}
       />
 
-      <div className="flex flex-1 pt-12">
+      <div className="flex flex-1 pt-12 pb-8">
         <FileExplorer
           files={state.files}
           activeFileId={state.activeFileId}
@@ -338,6 +407,26 @@ const App: React.FC = () => {
                       isVisible={showProviderStatus}
                     />
                   )}
+
+                  {!showDependencies && !showMetrics && !showProviderStatus && showAdvancedAnalysis && (
+                    <AdvancedAnalysisPanel
+                      files={state.files}
+                      issues={state.issues}
+                      isVisible={showAdvancedAnalysis}
+                      onRunAnalysis={triggerAnalysis}
+                    />
+                  )}
+
+                  {!showDependencies && !showMetrics && !showProviderStatus && !showAdvancedAnalysis && showCodeSuggestions && (
+                    <CodeSuggestionsPanel
+                      files={state.files}
+                      isVisible={showCodeSuggestions}
+                      onApplySuggestion={(suggestion) => {
+                        // Placeholder for applying suggestions
+                        console.log("Applying suggestion:", suggestion);
+                      }}
+                    />
+                  )}
                 </div>
              </div>
           </div>
@@ -351,40 +440,81 @@ const App: React.FC = () => {
         />
       </div>
 
-      {/* Additional Panels - Below the main content */}
-      {showMetrics && (
-        <CodeMetricsPanel
-          files={state.files}
-          isVisible={showMetrics}
-        />
+      {/* Footer with MT Tech Industries LLC branding */}
+      <div className="absolute bottom-0 left-0 right-0 h-8 bg-slate-900/80 border-t border-slate-800 flex items-center justify-center text-xs text-slate-500">
+        <div className="flex items-center gap-2">
+          <span>Powered by</span>
+          <img
+            src="https://github.com/mttechindustries/mttechindustries.github.io/blob/main/mtlogodark.webp?raw=true"
+            alt="MT Tech Industries Logo"
+            className="w-4 h-4 object-contain"
+          />
+          <span className="font-medium text-slate-400">MT Tech Industries LLC</span>
+          <span>•</span>
+          <span>v2026.1.0</span>
+        </div>
+      </div>
+
+      {/* Additional Panels - Modal-style overlays when not shown in sidebar */}
+      {showAdvancedAnalysis && (showDependencies || showMetrics || showProviderStatus) && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-lg w-full max-w-4xl h-5/6 overflow-hidden flex flex-col">
+            <div className="p-4 border-b border-slate-800 flex justify-between items-center">
+              <h2 className="text-lg font-bold text-slate-200">Advanced Analysis</h2>
+              <button
+                onClick={() => setShowAdvancedAnalysis(false)}
+                className="text-slate-400 hover:text-slate-200"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="flex-1 overflow-auto p-4">
+              <AdvancedAnalysisPanel
+                files={state.files}
+                issues={state.issues}
+                isVisible={showAdvancedAnalysis}
+                onRunAnalysis={triggerAnalysis}
+              />
+            </div>
+          </div>
+        </div>
       )}
 
-      {showProviderStatus && (
-        <AIProviderStatusPanel
-          currentProvider={currentProvider}
-          isVisible={showProviderStatus}
-        />
+      {showCodeSuggestions && (showDependencies || showMetrics || showProviderStatus || showAdvancedAnalysis) && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-lg w-full max-w-4xl h-5/6 overflow-hidden flex flex-col">
+            <div className="p-4 border-b border-slate-800 flex justify-between items-center">
+              <h2 className="text-lg font-bold text-slate-200">Code Suggestions</h2>
+              <button
+                onClick={() => setShowCodeSuggestions(false)}
+                className="text-slate-400 hover:text-slate-200"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="flex-1 overflow-auto p-4">
+              <CodeSuggestionsPanel
+                files={state.files}
+                isVisible={showCodeSuggestions}
+                onApplySuggestion={(suggestion) => {
+                  // Placeholder for applying suggestions
+                  console.log("Applying suggestion:", suggestion);
+                }}
+              />
+            </div>
+          </div>
+        </div>
       )}
 
-      {showAdvancedAnalysis && (
-        <AdvancedAnalysisPanel
-          files={state.files}
-          issues={state.issues}
-          isVisible={showAdvancedAnalysis}
-          onRunAnalysis={triggerAnalysis}
-        />
-      )}
-
-      {showCodeSuggestions && (
-        <CodeSuggestionsPanel
-          files={state.files}
-          isVisible={showCodeSuggestions}
-          onApplySuggestion={(suggestion) => {
-            // Placeholder for applying suggestions
-            console.log("Applying suggestion:", suggestion);
-          }}
-        />
-      )}
+      {/* Hidden file input for upload */}
+      <input
+        id="file-upload"
+        type="file"
+        accept=".py,.txt,.json,.js,.ts,.jsx,.tsx"
+        multiple
+        onChange={handleFileUpload}
+        className="hidden"
+      />
     </div>
   );
 };
