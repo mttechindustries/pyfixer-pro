@@ -118,11 +118,27 @@ check_environment() {
 
 # Function to start the application
 start_application() {
-    echo -e "${BLUE}🚀 Starting PyFixer-Pro...${NC}"
-    echo -e "${YELLOW}Application will be available at http://localhost:5173${NC}"
-    echo -e "${YELLOW}Press Ctrl+C to stop the server${NC}"
+    echo -e "${BLUE}🚀 Starting PyFixer-Pro Development Server...${NC}"
     echo ""
-    
+    echo -e "${YELLOW}The application will start shortly.${NC}"
+    echo -e "${YELLOW}Once started, access it at the URL shown in the output below.${NC}"
+    echo ""
+    echo -e "${YELLOW}💡 Tip: Press Ctrl+C to stop the server when you're done${NC}"
+    echo ""
+    echo -e "${CYAN}┌─────────────────────────────────────────────────────────┐${NC}"
+    echo -e "${CYAN}│${NC}              ${WHITE}PyFixer-Pro is Starting...${NC}                 ${CYAN}│${NC}"
+    echo -e "${CYAN}├─────────────────────────────────────────────────────────┤${NC}"
+    echo -e "${CYAN}│${NC}                                                         ${CYAN}│${NC}"
+    echo -e "${CYAN}│${NC}  ${GREEN}✓${NC} Look for the 'Local:' URL in the output below        ${CYAN}│${NC}"
+    echo -e "${CYAN}│${NC}  ${GREEN}✓${NC} Usually: http://localhost:3000 (or assigned port)    ${CYAN}│${NC}"
+    echo -e "${CYAN}│${NC}  ${GREEN}✓${NC} Press Ctrl+C to stop the server                     ${CYAN}│${NC}"
+    echo -e "${CYAN}│${NC}  ${GREEN}✓${NC} Restart later with: npm run dev                     ${CYAN}│${NC}"
+    echo -e "${CYAN}│${NC}                                                         ${CYAN}│${NC}"
+    echo -e "${CYAN}└─────────────────────────────────────────────────────────┘${NC}"
+    echo ""
+    echo -e "${WHITE}📋 Waiting for server to start... Look for the URL in the output below:${NC}"
+    echo ""
+
     # Start the development server
     npm run dev
 }

@@ -10,7 +10,7 @@ import AIProviderStatusPanel from './components/AIProviderStatusPanel';
 import AdvancedAnalysisPanel from './components/AdvancedAnalysisPanel';
 import CodeSuggestionsPanel from './components/CodeSuggestionsPanel';
 import { PythonFile, AnalysisIssue, ProjectState, AIProviderType } from './types';
-import { analyzeProjectCode, applySmartFix, formatPythonCode, aiService } from './services/geminiService';
+import { analyzeProjectCode, applySmartFix, formatPythonCode, aiService } from './services/aiService';
 import { Play, Bug, Wand2, Zap, Settings as SettingsIcon, Command, Eye, Cpu, BarChart3, Brain, Search, Lightbulb } from 'lucide-react';
 
 const INITIAL_CODE = `import sys
@@ -80,7 +80,7 @@ const App: React.FC = () => {
   }, []);
 
   const handleAddFile = useCallback(() => {
-    const newId = Math.random().toString(36).substr(2, 9);
+    const newId = Math.random().toString(36).substring(2, 11);
     const newFile: PythonFile = {
       id: newId,
       name: `new_script_${state.files.length + 1}.py`,
@@ -167,6 +167,19 @@ const App: React.FC = () => {
     setShowSettings(false);
   };
 
+  const handleApplySuggestion = (suggestion: any) => {
+    const file = state.files.find(f => f.name === suggestion.file);
+    if (!file) return;
+
+    // Apply the "after" code change to the file
+    // Note: This is a simple replacement - real implementation would need line-based editing
+    const lines = file.content.split('\n');
+    if (lines[suggestion.line - 1]) {
+      lines[suggestion.line - 1] = suggestion.after;
+      handleFileChange(file.id, lines.join('\n'));
+    }
+  };
+
   // Import/Upload functionality
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -176,7 +189,7 @@ const App: React.FC = () => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const content = e.target?.result as string;
-        const newId = Math.random().toString(36).substr(2, 9);
+        const newId = Math.random().toString(36).substring(2, 11);
         const newFile: PythonFile = {
           id: newId,
           name: file.name,
@@ -249,7 +262,11 @@ const App: React.FC = () => {
               <Wand2 size={14} className="text-emerald-400" />
               FORMAT (PEP8)
             </button>
-            <button className="flex items-center gap-1.5 px-3 py-1 bg-blue-600 hover:bg-blue-500 text-xs font-semibold rounded transition-all shadow-lg shadow-blue-900/20">
+            <button
+              onClick={() => console.log('RUN: Python execution requires backend service')}
+              disabled={!activeFile}
+              className="flex items-center gap-1.5 px-3 py-1 bg-blue-600 hover:bg-blue-500 text-xs font-semibold rounded transition-all shadow-lg shadow-blue-900/20 disabled:opacity-50"
+            >
               <Play size={14} fill="currentColor" />
               RUN
             </button>
@@ -421,10 +438,7 @@ const App: React.FC = () => {
                     <CodeSuggestionsPanel
                       files={state.files}
                       isVisible={showCodeSuggestions}
-                      onApplySuggestion={(suggestion) => {
-                        // Placeholder for applying suggestions
-                        console.log("Applying suggestion:", suggestion);
-                      }}
+                      onApplySuggestion={handleApplySuggestion}
                     />
                   )}
                 </div>

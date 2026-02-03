@@ -2,10 +2,8 @@
 import { aiService } from './aiService';
 import { PythonFile, AnalysisIssue, AIProviderType } from '../types';
 
-// Initialize with Gemini as default provider
-aiService.initializeProvider('gemini', {
-  apiKey: process.env.GEMINI_API_KEY || ''
-});
+// Re-export aiService functions for backward compatibility
+// Note: Initialization is handled in App.tsx to avoid duplicate initialization
 
 export async function analyzeProjectCode(files: PythonFile[]): Promise<{ issues: AnalysisIssue[], summary: string }> {
   return aiService.analyzeProjectCode(files);

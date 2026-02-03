@@ -14,6 +14,18 @@ export interface AnalysisIssue {
   suggestedFix?: string;
 }
 
+export interface CodeSuggestion {
+  id: string;
+  title: string;
+  description: string;
+  category: 'optimization' | 'readability' | 'security' | 'performance' | 'best-practice';
+  file: string;
+  line: number;
+  confidence: number;
+  before: string;
+  after: string;
+}
+
 export interface ProjectState {
   files: PythonFile[];
   activeFileId: string | null;

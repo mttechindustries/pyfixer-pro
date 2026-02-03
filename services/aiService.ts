@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import OpenAI from 'openai';
 import { PythonFile, AnalysisIssue, AIProvider, AIProviderType, AIProviderConfig, AIService } from "./types";
 import { mockAIService, AIRequest } from "./mockAIService";

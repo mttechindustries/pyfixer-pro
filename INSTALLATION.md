@@ -32,11 +32,22 @@ ZAI_API_KEY=your_zai_api_key
 ```
 
 ### 4. Start the Development Server
+
+#### Option 1: Using the startup script (Recommended)
+Run the startup script which will check prerequisites, install dependencies, and start the server:
+```bash
+chmod +x ./startup.sh
+./startup.sh
+```
+After running the script, look for the URL in the terminal output (typically `http://localhost:3000` or another available port) and copy it to your browser.
+
+#### Option 2: Using npm directly
 ```bash
 npm run dev
 ```
+After running the command, look for the URL in the terminal output (typically `http://localhost:3000` or another available port) and copy it to your browser.
 
-The application will be available at `http://localhost:5173`
+The application will be available at the URL shown in the terminal output (typically `http://localhost:3000` or another available port if 3000 is in use).
 
 ## Configuration Options
 

@@ -53,6 +53,18 @@ This project is proudly developed and maintained by [MT Tech Industries LLC](htt
 
 **Prerequisites:** Node.js
 
+### Option 1: Using the startup script (Recommended)
+1. Make the script executable:
+   ```bash
+   chmod +x ./startup.sh
+   ```
+2. Run the startup script:
+   ```bash
+   ./startup.sh
+   ```
+3. After running the script, the application will start automatically. Look for the URL in the terminal output (typically `http://localhost:3000` or another available port) and copy it to your browser.
+
+### Option 2: Manual setup
 1. Install dependencies:
    ```bash
    npm install
@@ -70,6 +82,9 @@ This project is proudly developed and maintained by [MT Tech Industries LLC](htt
    ```bash
    npm run dev
    ```
+4. After running the command, look for the URL in the terminal output (typically `http://localhost:3000` or another available port) and copy it to your browser.
+
+The application will be available at the URL shown in the terminal output (typically `http://localhost:3000` or another available port if 3000 is in use).
 
 ## Configuration
 
